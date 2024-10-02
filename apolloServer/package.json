@@ -1,0 +1,23 @@
+{
+  "name": "apolloserver",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@apollo/server": "^4.10.5",
+    "graphql": "^16.9.0",
+    "graphql-tag": "^2.12.6",
+    "sequelize": "^6.37.3",
+    "dotenv": "^16.4.5",
+    "bcrypt": "^5.1.1",
+    "mysql2": "^3.10.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

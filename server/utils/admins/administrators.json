@@ -1,0 +1,14 @@
+{
+  "Administrators": [
+    {
+      "id": 1,
+      "name": "Guy Beals",
+      "email": "GuyBeals@stjda.org"
+    },
+    {
+      "id": 2,
+      "name": "Morgan Beals",
+      "email": "MorganB@stjda.org"
+    }
+  ]
+}

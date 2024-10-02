@@ -1,0 +1,27 @@
+{
+  "name": "stjda_app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "heroku-postbuild": "npm install --prefix client && npm install --prefix server && npm run build --prefix client",
+    "dev": "concurrently \"cd server && npm run watch\" \"cd client && npm run dev\"",
+    "install": "cd server && npm i && cd ../client && npm i",
+    "build": "cd client && npm run build"
+  },
+  "keywords": [],
+  "author": "www.guymorganb.com",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^5.1.0"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.9.3",
+    "@apollo/usage-reporting-protobuf": "^4.1.1",
+    "@apollo/utils.fetcher": "^3.0.0",
+    "@babel/preset-env": "^7.24.6",
+    "@babel/runtime-corejs3": "^7.24.6",
+    "if-env": "^1.0.4"
+  }
+}

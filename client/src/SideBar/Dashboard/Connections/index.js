@@ -1,0 +1,1 @@
+export { SocialPage } from './SocialConnect';
