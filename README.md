@@ -17,20 +17,6 @@ To start the project, cd into the STJDA_APP directory and NPM run dev to start t
 4) New code additions mu be peer approved
 5) Commit changes
 
-
-## Key Features
-- Automate and streamline workflow processes for STSJ
-- Progressive Web App (PWA) for enhanced user experience and offline functionality
-- Built using Node.js for server-side scripting
-- Utilizes two SQL databases:
-  - Master database for primary data storage
-  - Slave database for data replication and backup
-- Real-time data synchronization between master and slave databases
-- Responsive and user-friendly interface
-- Secure authentication and authorization mechanisms
-- Integration with existing STSJ systems and tools
-- My sql database: to run the schema use this: ```mysql -u username -p < /path/to/your/schema.sql```
-
 ## Technical Stack
 - Front-end:
   - React.js by Meta, HTML5, CSS3, Vite
@@ -350,4 +336,55 @@ s3.upload(params, function(err, data) {
 // Example usage:
 // uploadFile(Buffer.from('Hello MinIO!'), 'my-bucket', 'hello.txt');
 ```
+# Virtual Machine User Configuration
 
+This document outlines the user configuration for our virtual machine, focusing on two primary users: `nodejs` and `guymorganb`.
+
+## nodejs User
+
+### Purpose
+The `nodejs` user is designed to run application code, providing a secure environment separate from the root user.
+
+### Permissions
+- Home Directory: `/home/nodejs`
+- Directory Permissions: 755 (rwxr-xr-x)
+- File Permissions: 755 (rwxr-xr-x) for existing files, 644 (rw-r--r--) for newly created files
+- Umask: 0022
+
+### Access Rights
+- Full control (read, write, execute) over their home directory and its contents
+- Other users can read and execute files in the nodejs home directory but cannot modify them
+
+### Usage
+- All application code should be run under this user
+- New files created by this user will have 644 permissions
+- New directories created by this user will have 755 permissions
+
+## guymorganb User
+
+### Purpose
+The `guymorganb` user appears to be the primary administrative user with sudo privileges.
+
+### Permissions
+- Home Directory: `/home/guymorganb` (assumed)
+- Sudo Access: Yes (can perform administrative tasks)
+
+### Usage
+- Use this account for system administration and configuration tasks
+- Avoid running application code under this user for security best practices
+
+## Security Notes
+
+1. The `nodejs` user has been configured with restricted permissions to enhance security while allowing necessary access for running applications.
+2. Always use the principle of least privilege: run processes and applications with the minimum necessary permissions.
+3. Regularly review and update user permissions as needed.
+4. Keep the system and all installed software up to date.
+
+## Maintenance
+
+When deploying new applications or scripts:
+1. Place them in the appropriate directory under `/home/nodejs`
+2. Ensure they are owned by the `nodejs` user: `sudo chown nodejs:nodejs /path/to/file`
+3. Set the correct permissions: `sudo chmod 755 /path/to/file` for scripts, `sudo chmod 644 /path/to/file` for configuration files
+
+For any changes to system configuration, use the `guymorganb` user with sudo privileges.
