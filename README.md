@@ -127,7 +127,14 @@ To manually deploy the STSJ Workflow Automation application, follow these steps:
     - Establish a disaster recovery plan to ensure quick recovery and minimal downtime in case of any unforeseen events.
 
 ## Setting up the services
-- Youll need to setup the microservices for this app, including redis, mysql (master and slave) using Docker containers to run the services, 
+- # If you're running on Linux, 'host.docker.internal' might not work out of the box. In this case, you have two options:
+* 'host.docker.internal' is a special DNS name that resolves to the host machine's localhost on Docker for Windows and macOS.
+
+- Youll need to setup the microservices for this app, including redis, mysql (master and slave) using Docker containers to run the services
+
+a. Use the host's network IP address (usually starts with 172.17.0.1) instead of 'host.docker.internal'.
+b. Add '--add-host=host.docker.internal:host-gateway' to your Docker run command.
+
 # Run the master database and mount a volume to persist data @ /var/lib/mysql inside the docker container
 * For MySql: 
 docker run --name mysql-master \
@@ -137,6 +144,8 @@ docker run --name mysql-master \
   -e MYSQL_PASSWORD=Colorado1! \
   -p 3306:3306 \
   -v mysql-master-data:/var/lib/mysql \
+  --network apollo-net \
+  --add-host=host.docker.internal:host-gateway \
   -d mysql:latest
 
 # Run the slave database
@@ -149,6 +158,31 @@ docker run --name mysql-slave \
   -v mysql-slave-data:/var/lib/mysql \
   -d mysql:latest
 
+# Setup apollo server container
+docker run --name my-apollo-server \
+   -p 4000:4000 \
+   --network apollo-net \
+   --add-host=host.docker.internal:host-gateway \
+   -e MASTERPORT=3306 \
+   -e SLAVEPORT=3307 \
+   -e DB_NAME=STJDA \
+   -e DB_USER=root \
+   -e DB_PW=Colorado1! \
+   -e NODE_ENV=development \
+   gbeals1/api-servers:ApolloServer-SQL_API-v1.0
+
+* Ensure your Express server on the host machine is listening on all interfaces, not just localhost:
+
+app.listen(3000, '0.0.0.0', () => {
+  console.log('Server is running on port 3000');
+});
+
+# setting up Redis in a container
+docker pull redis && \
+docker pull redislabs/redisinsight && \
+docker run --name my-redis -p 6379:6379 -d redis && \
+docker run --name redis-stack -p 8001:8001 -d redislabs/redisinsight
+
 # Import any existing SQL data
 Copy the dump file to the container:
 docker cp stjda_backup.sql 78f2edee8b42:/stjda_backup.sql
@@ -157,7 +191,7 @@ docker exec -it [container_id] sh -C 'mysql -u root -p[password] [database_name]
 # log into mysql shell inside the docker container
 docker exec -it [container_id] mysql -u root -p[password] [database_name]
 
-* for Redis: docker pull redis && docker pull redislabs/redisinsight && docker run --name my-redis -p 6379:6379 -d redis && docker run --name redis-stack -p 8001:8001 -d redislabs/redisinsight
+
 
 * For GraphQL: 
  - From the apolloServer Directory, build the docker image:  docker build -t apollo-server .
@@ -201,41 +235,6 @@ docker exec -it [container_id] mysql -u root -p[password] [database_name]
 #### build the express-server for both arm64 and amd64 - this will replace existing images pushed to dockerhub
    docker buildx build --platform linux/amd64,linux/arm64 -t gbeals1/api-servers:ApolloServer-SQL_API-v1.0 --push .
    
-#### Run the container again with the same settings as before
-docker run --name my-apollo-server \
-  -p 4000:4000 \
-  --network apollo-net \
-  -e MASTERPORT=3306 \
-  -e SLAVEPORT=3307 \
-  -e DB_NAME=STJDA \
-  -e DB_USER=root \
-  -e DB_PW=Colorado1! \
-  -e NODE_ENV=development \
-  gbeals1/api-servers:ApolloServer-SQL_API-v1.0
-
-# If you're running on Linux, 'host.docker.internal' might not work out of the box. In this case, you have two options:
-* 'host.docker.internal' is a special DNS name that resolves to the host machine's localhost on Docker for Windows and macOS.
-
-   a. Use the host's network IP address (usually starts with 172.17.0.1) instead of 'host.docker.internal'.
-   b. Add '--add-host=host.docker.internal:host-gateway' to your Docker run command.
-
-docker run --name my-apollo-server \
-   -p 4000:4000 \
-   --network apollo-net \
-   --add-host=host.docker.internal:host-gateway \
-   -e MASTERPORT=3306 \
-   -e SLAVEPORT=3307 \
-   -e DB_NAME=STJDA \
-   -e DB_USER=root \
-   -e DB_PW=Colorado1! \
-   -e NODE_ENV=development \
-   gbeals1/api-servers:ApolloServer-SQL_API-v1.0
-
-* Ensure your Express server on the host machine is listening on all interfaces, not just localhost:
-
-app.listen(3000, '0.0.0.0', () => {
-  console.log('Server is running on port 3000');
-});
 
 * Use docker network inspect apollo-net to ensure your Apollo server container is
 
@@ -350,6 +349,7 @@ The `nodejs` user is designed to run application code, providing a secure enviro
 - Directory Permissions: 755 (rwxr-xr-x)
 - File Permissions: 755 (rwxr-xr-x) for existing files, 644 (rw-r--r--) for newly created files
 - Umask: 0022
+- password: nodejs
 
 ### Access Rights
 - Full control (read, write, execute) over their home directory and its contents
