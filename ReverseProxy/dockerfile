@@ -1,0 +1,41 @@
+# Use the official Node.js 20 image as a parent image
+FROM node:20-alpine
+
+# Install necessary tools, including su-exec and npm-check-updates
+RUN apk update && apk add --no-cache nano bash su-exec libcap && \
+    npm install -g npm-check-updates
+    
+# Set the working directory inside the container
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json (if available)
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production && \
+    npm install pm2 -g
+
+# Create a non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+# Copy the rest of your application's source code
+COPY --chown=nodejs:nodejs . .
+
+# Create necessary directories and set permissions
+RUN mkdir -p .well-known/pki-validation .pm2 logs certificates certs CAs && \
+    chown -R nodejs:nodejs . && \
+    chmod -R 755 .well-known logs certificates certs CAs
+
+# Give Node.js the capability to bind to privileged ports
+RUN setcap 'cap_net_bind_service=+ep' $(which node)
+
+# Copy the entrypoint script and make it executable
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Inform Docker that the container listens on the specified network ports at runtime
+EXPOSE 80 443 3002
+
+# Use the entrypoint script to set permissions and start PM2
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
