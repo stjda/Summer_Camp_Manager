@@ -5,14 +5,13 @@
  */
 const express = require('express');
 const router = express.Router();
-const uuidv4 = require('uuid').v4;
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
-const jwt = require('jsonwebtoken');
 const { config } = require('dotenv');
 const multer = require('multer');
 config({ path: './.env' });
 
+const minio_form_service = 'http://10.128.0.2' // this is a Cloud internal IP address, not public
+const internalDomain = 'http://10.128.0.3'
 /**
  * Computes a SHA-256 checksum for the given data.
  * 
@@ -125,8 +124,12 @@ router.post('/DiabetesManagement/intake', async (req, res) => {
         const checksum = computeChecksum(restructuredData)
         
       // Check if the object already exists
-      try {
-        const response = await fetch(`http://34.135.9.49:3000/api/minioG/checkObjectKey/${bucket}/${checksum}`);
+      try { // calls the minio bucket from the other service
+        const response = await fetch(`${minio_form_service}/api/minioG/checkObjectKey/${bucket}/${checksum}`, {
+          headers: {
+            'Origin': `${internalDomain}` // Replace with your actual domain
+          }
+        });
         const responseText = await response.text();
         console.log("Raw response:", responseText);
         data = JSON.parse(responseText);
@@ -144,10 +147,11 @@ router.post('/DiabetesManagement/intake', async (req, res) => {
       }
 
       // Use checksum as the key, save the data in the bucket
-      const updateResult = await fetch(`http://34.135.9.49:3000/api/minioP/${bucket}`, {
+      const updateResult = await fetch(`${minio_form_service}/api/minioP/${bucket}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Origin': `${internalDomain}`
           // 'Authorization': `Bearer ${req.cookies.jwt}`
         },
         body: JSON.stringify({
@@ -186,10 +190,11 @@ router.post('/DiabetesManagement/intake', async (req, res) => {
  */
 router.get('/DiabetesManagement', async (req, res) => {
   try {
-    const result = await fetch('http://34.135.9.49:3000/api/minioG/getAll/stjda-signup-forms', {
+    const result = await fetch(`${minio_form_service}/api/minioG/getAll/stjda-signup-forms`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Origin': `${internalDomain}`
         // 'Authorization': `Bearer ${req.cookies.jwt}`
       }
     });
@@ -252,13 +257,14 @@ router.post('/DiabetesManagement/uploadDocument', async (req, res) => {
         .update(base64Data)
         .digest('hex');
 
-      const proxyUrl = `http://34.135.9.49:3000/api/minioP/upload/${bucket}`;
+      const proxyUrl = `${minio_form_service}/api/minioP/upload/${bucket}`;
 
       // Use checksum as the key
       const updateResult = await fetch(proxyUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Origin': `${internalDomain}`
         },
         body: JSON.stringify({
           key: checksum,
@@ -316,7 +322,7 @@ router.get('/med-checkin-filtering/:prefix?', async (req, res) => {
     }
 
     // Grab all objects from the specified bucket
-    const url = new URL(`http://34.135.9.49:3000/api/minioG/getAll/${bucket}`);
+    const url = new URL(`${minio_form_service}/api/minioG/getAll/${bucket}`);
     if (prefix) {
       url.searchParams.append('prefix', prefix);
     }
@@ -325,6 +331,7 @@ router.get('/med-checkin-filtering/:prefix?', async (req, res) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Origin': `${internalDomain}`
       },
     });
 
@@ -358,7 +365,7 @@ router.get('/med-checkin-filtering/:prefix?', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching data' });
   }
 });
-/**
+/** How the route data filtering works
  * First, let's identify the entry in the 'entriesToKeep' array:
 Name: Guy Beals
 First Name: Guy
@@ -404,13 +411,14 @@ router.get('/med-checkin-filter', async (req, res) => {
     }
     // console.log('Entries to keep:', entriesToKeep)
 
-    const url = new URL(`http://34.135.9.49:3000/api/minioG/getAll/${bucket}`);
+    const url = new URL(`${minio_form_service}/api/minioG/getAll/${bucket}`);
     // console.log('Fetching data from URL:', url.toString());
 
     const result = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Origin': `${internalDomain}`
       },
     });
 
@@ -486,7 +494,13 @@ router.post('/MedicalCheckIn/submit', async (req, res) => {
     // Check if the object already exists
     let data;
     try {
-      const response = await fetch(`http://34.135.9.49:3000/api/minioG/checkObjectKey/${bucket}/${checksum}`);
+      const response = await fetch(`${minio_form_service}/api/minioG/checkObjectKey/${bucket}/${checksum}`,{
+        headers: {
+          'Origin': `${internalDomain}`,
+          'Content-Type': 'application/json',
+          // Add any other headers you need
+        }
+      });
       const responseText = await response.text();
       console.log("Raw response:", responseText);
       data = JSON.parse(responseText);
@@ -504,10 +518,11 @@ router.post('/MedicalCheckIn/submit', async (req, res) => {
     }
 
     // Use checksum as the key, save the data in the bucket
-    const updateResult = await fetch(`http://34.135.9.49:3000/api/minioP/${bucket}`, {
+    const updateResult = await fetch(`${minio_form_service}/api/minioP/${bucket}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Origin': `${internalDomain}`
         // 'Authorization': `Bearer ${req.cookies.jwt}`
       },
       body: JSON.stringify({

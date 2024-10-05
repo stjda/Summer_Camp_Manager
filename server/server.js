@@ -1,3 +1,4 @@
+// backend server located at internal ip: 10.128.0.3
 const express = require('express')
 const cookieParser = require('cookie-parser');
 const sequelize = require('./config/connection.js');    
@@ -7,7 +8,7 @@ const { config } = require('dotenv');
 const controllers = require('./controllers/index.js')
 const models = require('./models/index.js')
 const helmet = require('helmet');
-
+const fs = require('fs');
 const Redis = require('ioredis');
 const redisClient = new Redis({
   host: process.env.REDIS_HOST || 'localhost',
@@ -28,8 +29,23 @@ const SPECIAL_PORT = process.env.SPECIAL_PORT;
 
 const app = express()
 
-// Use Helmet!
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP
+  crossOriginEmbedderPolicy: false,
+  crossOriginOpenerPolicy: false,
+  crossOriginResourcePolicy: false,
+  dnsPrefetchControl: false,
+  expectCt: false,
+  frameguard: false,
+  hidePoweredBy: false,
+  hsts: false,
+  ieNoOpen: false,
+  noSniff: false,
+  originAgentCluster: false,
+  permittedCrossDomainPolicies: false,
+  referrerPolicy: false,
+  xssFilter: false
+}));
 
 // Disable X-Powered-By header
 app.disable('x-powered-by');
@@ -38,9 +54,9 @@ app.disable('x-powered-by');
 const rateLimit = require("express-rate-limit");
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 500 // limit each IP to 100 requests per windowMs
 });
-app.use(limiter);
+//app.use(limiter);
 
 // CORS configuration
 app.use(cors({
@@ -88,36 +104,23 @@ async function connectToRedis() {
     throw err;
   }
 }
- 
+
+if (process.env.NODE_ENV === 'production') {
+  const staticPath = path.join(__dirname, '..', 'client', 'dist');
+  console.log('Serving static files from:', staticPath);
+  
+  // Serve static files
+  app.use(express.static(staticPath));
+
+}
 
 (async () => {
 
     try {
       connectToRedis();
       console.log('Connection has been established successfully.');
-  //  await syncAllModels()    
+  //  await syncAllModels();    
 
-    console.log("env" + process.env.NODE_ENV +"\n")
-    // Health Check Endpoint
-    app.get('/health', (req, res) => {
-        // Custom health checks, e.g., database connections
-        res.status(200).send('Healthy');
-    });
-
-    // Static file serving
-    if (process.env.NODE_ENV === 'production') {
-      // Serve static files
-      app.use(express.static(path.join(__dirname, '..', 'client', 'build'), {
-        setHeaders: (res, path) => {
-          res.set('X-Content-Type-Options', 'nosniff');
-        }
-      }));
-
-      // Handle client routing, return all requests to React app
-      app.get('*', (req, res) => {
-        res.sendFile(path.join(__dirname, '..', 'client', 'build', 'index.html'));
-      });
-    }
 
     // Start the server
     app.listen(PORT, SPECIAL_PORT, () => {

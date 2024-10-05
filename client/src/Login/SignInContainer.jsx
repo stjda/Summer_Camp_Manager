@@ -39,6 +39,9 @@ export const SignInSection = ({ checksum }) => { // the checksum is passed all t
     const [spinner, setSpinner] = useState()
     const [fadeOut, setFadeOut] = useState(false);
     const [fullScreenSpinner, setFullScreenSpinner] = useState(false);
+
+    const proxy_ip = 'https://www.whealthy.ai/server';
+    
     // GraphQL REGISTER_NEW_USER hook
     const [registerNewUser, { data, loading, error }] = useMutation(REGISTER_NEW_USER, {
       onCompleted: (data) => {
@@ -88,14 +91,14 @@ export const SignInSection = ({ checksum }) => { // the checksum is passed all t
     const submitUser = async (theFormData) =>{
       if (termsAccepted && (theFormData.role === 'volunteer')) {
           try{
-              // const response = await fetch('http://localhost:3000/api/signup/create', {
-              //     method: 'POST', // Specify the method
-              //     headers: {
-              //         'Content-Type': 'application/json'
-              //     },
-              //     credentials: 'include',
-              //     body: JSON.stringify(theFormData)
-              // });
+              const response = await fetch(`${proxy_ip}/server/api/signup/create`, {
+                  method: 'POST', // Specify the method
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  credentials: 'include',
+                  body: JSON.stringify(theFormData)
+              });
               console.log("the form data: ", theFormData)
               const data = await response.text();
               if(response.ok){

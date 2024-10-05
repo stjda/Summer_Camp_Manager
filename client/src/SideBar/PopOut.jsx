@@ -179,7 +179,7 @@ export const SlideOut = ({ tabSelected }) => {
                   backgroundColor: '#1479cc',
                   color: 'white',
                   borderRadius: '50%',
-                  zIndex: 1,
+                  
                   transform: isSidebarOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                   transition: 'transform 0.3s ease-in-out',
                   zIndex:'10'

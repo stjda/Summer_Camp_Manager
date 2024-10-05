@@ -28,6 +28,9 @@ export const EditProfileRedirect = () => {
     const [messageIndex, setMessageIndex] = useState(0);
     const [STJDA_No_User, setSTJDA_No_User] = useState(false);
     const { userProfileStore } = useStore();
+
+    const proxy_ip = 'https://www.whealthy.ai/server';
+
     // call to graphql for the camper data
 const [getCamperByEmail, { data, loading: queryLoading, error }] = useLazyQuery(GET_CAMPER_BY_EMAIL, {
   fetchPolicy: 'no-cache',
@@ -455,7 +458,7 @@ const cacheUsersData = async (email) => {
     }
 
     // First, clear existing data (if any) by setting it to null
-    const clearResponse = await fetch(`http://localhost:3000/api/redis/cache/${key}`, {
+    const clearResponse = await fetch(`${proxy_ip}/api/redis/cache/${key}`, {
       method: "PUT",
       headers: {
         'Content-Type': 'application/json'
@@ -468,7 +471,7 @@ const cacheUsersData = async (email) => {
     }
 
     // Now, set the new data
-    const setResponse = await fetch(`http://localhost:3000/api/redis/cache/${key}`, {
+    const setResponse = await fetch(`${proxy_ip}/api/redis/cache/${key}`, {
       method: "PUT",
       headers: {
         'Content-Type': 'application/json'

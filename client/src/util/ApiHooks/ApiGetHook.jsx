@@ -254,7 +254,6 @@ export const useFetch = (url) => {
             longActingInsulinType,
             isCompleted,
             role,
-            contactPhone,
             document,
             signature,
             // Additional fields needed by ConfirmationForm

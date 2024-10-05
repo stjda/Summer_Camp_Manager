@@ -8,7 +8,7 @@ config({ path: './.env' });
 
 
 let userData = {};
-
+const baseUrl = 'https://www.whealthy.ai'
 // JWT setup
 const jwtSecret = 'mysecretsshhhhh';
 const jwtExpiration = '2h';
@@ -36,7 +36,7 @@ router.post('/', async (req,res)=>{
                 maxAge: 30000  // Expire after 30 seconds
               })
             
-            return res.redirect(409, 'http://localhost:5173/profile');
+            return res.redirect(409, `http://localhost:5173/profile`);
             // Create user either volunteer or camper
         }
         if (camperData) {

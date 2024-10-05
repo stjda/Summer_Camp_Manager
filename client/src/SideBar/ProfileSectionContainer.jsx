@@ -416,8 +416,6 @@ const parseLocalStorage = (value) => {
         return d.careProfile.correctionFactor;
       case 'cgm':
         return d.careProfile.cgm;
-      case 'insulinCarbRatio':
-        return d.careProfile.insulinCarbRatio;
       case 'insulinPump':
         return d.careProfile.insulinPump;
       case 'insulinPumpModel':

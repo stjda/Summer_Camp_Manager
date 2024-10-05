@@ -27,6 +27,8 @@ export const SignInForm = ({ createUser }) => {
   const [email, setEmail] = useState(storedEmail);
   const [spinner, setSpinner] = useState(false)
 
+  const proxy_ip = 'https://www.whealthy.ai/server';
+  
   useEffect(() => {
     // make a function to calle the backend and get the credentials
     // make the function grab the credentials run on the useEffect
@@ -44,7 +46,7 @@ export const SignInForm = ({ createUser }) => {
 
   const callApi = async (theFormData) =>{
     try{
-      const response = await fetch('http://localhost:3000/api/login', {
+      const fetchResponse = await fetch(`${proxy_ip}/api/login`, {
           method: 'POST', // Specify the method
           headers: {
               'Content-Type': 'application/json'
@@ -52,8 +54,8 @@ export const SignInForm = ({ createUser }) => {
           credentials: 'include',
           body: JSON.stringify(theFormData)
       });
-      const data = await response.text();
-      if(response.ok){
+      const data = await fetchResponse.text();
+      if(fetchResponse.ok){
         const path = parseURL(data);
         return path
       }else{
@@ -123,7 +125,7 @@ export const SignInForm = ({ createUser }) => {
   async function fetchGoogleAuth() {
     try {
         // Make an HTTP GET request to the Google auth endpoint
-        const response = await fetch('http://localhost:3000/api/auth/google');
+        const response = await fetch(`${proxy_ip}/api/auth/google`);
         // Check if the fetch was successful
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -246,7 +248,7 @@ export const SignInForm = ({ createUser }) => {
             <img
               className="screenshot"
               alt="STJDA Logo"
-              src="https://imgur.com/1MeimfQ.png"
+              src="https://i.imgur.com/1MeimfQ.png"
             />
             </a>
           </div>

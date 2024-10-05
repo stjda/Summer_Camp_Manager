@@ -14,14 +14,15 @@
   "author": "www.guymorganb.com",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^5.1.0"
+    "concurrently": "^9.0.1"
   },
   "dependencies": {
-    "@apollo/server": "^4.9.3",
+    "@apollo/server": "^4.11.0",
     "@apollo/usage-reporting-protobuf": "^4.1.1",
-    "@apollo/utils.fetcher": "^3.0.0",
-    "@babel/preset-env": "^7.24.6",
-    "@babel/runtime-corejs3": "^7.24.6",
+    "@apollo/utils.fetcher": "^3.1.0",
+    "@babel/preset-env": "^7.25.7",
+    "@babel/runtime-corejs3": "^7.25.7",
+    "bcrypt": "^5.1.1",
     "if-env": "^1.0.4"
   }
 }

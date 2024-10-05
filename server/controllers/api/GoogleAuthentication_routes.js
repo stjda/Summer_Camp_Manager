@@ -13,6 +13,8 @@ const SCOPES = [
   'openid'
 ];
 
+const baseUrl = 'https://www.whealthy.ai'
+
 const client_id = process.env.CLIENT_ID
 const client_secret = process.env.CLIENT_SECRET
 const redirect_uri = process.env.REDIRECT_URI
@@ -37,6 +39,7 @@ const getTokens = async (code) => {
 // google auth route /api/auth/google
 router.get("/google", async (req, res) => {
   try {
+    console.log(authUrl)
     // send the URL used for authentication after building it
     res.status(200).send(authUrl);
   } catch (error) {
@@ -97,7 +100,7 @@ router.get('/profile', async (req, res) => {
         console.log('Cookie set successfully in google oauth');
       // Redirect the user to the specific URL after successful token retrieval
       // this redirect page displays a spinner then sends back the cookie for server side parsing
-      res.redirect('http://localhost:5173/profile'); 
+      res.redirect(`${baseUrl}/profile`); 
     }else{
       res.cookie('STJDA_No_Verified_Gmail', {
         httpOnly: false,
@@ -106,11 +109,11 @@ router.get('/profile', async (req, res) => {
         path: '/',
         maxAge: 3000  // Expire after 30 seconds
       })
-      res.redirect(401, 'http://localhost:5173/error=emailNotVerified');
+      res.redirect(401, `${baseUrl}/error=emailNotVerified`);
     }
   } catch (error) {
     console.error('Failed to retrieve access tokens:', error);
-    res.redirect('http://localhost:5173/error=emailNotVerified');
+    res.redirect(`${baseUrl}/error=emailNotVerified`);
   }
 });
 

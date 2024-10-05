@@ -95,8 +95,11 @@ const [expandedPanel, setExpandedPanel] = useState(false);
 const [modalOpen, setModalOpen] = useState(false);
 const [formSaveSucess ,setFormSaveSucess]=useState({success: null, message: ""})
 const [accountCreatedSucess, setAccountCreatedSucess] = useState({success: null, message: ""})
+
+const proxy_ip='https://www.whealthy.ai/server'
+
   // call the backend server first, and it will grab the data from the database for the filtering
-  const { data:data, loading, error:error, LoadingComponent } = useFetch('http://localhost:3000/api/forms/DiabetesManagement');
+  const { data:data, loading, error:error, LoadingComponent } = useFetch(`${proxy_ip}/api/forms/DiabetesManagement`);
   // send post request Hook
   const {
     sendRequest: sendFormData,
@@ -104,7 +107,7 @@ const [accountCreatedSucess, setAccountCreatedSucess] = useState({success: null,
     error: sendFormError,
     response: formResponse,
     LoadComponent: sendFormLoadingComponent
-  } = useSendToAPI('http://localhost:3000/api/forms/DiabetesManagement/intake', 'POST');
+  } = useSendToAPI(`${proxy_ip}/api/forms/DiabetesManagement/intake`, 'POST');
 
   const {
     sendRequest: deleteForm,
@@ -112,7 +115,7 @@ const [accountCreatedSucess, setAccountCreatedSucess] = useState({success: null,
     error: deleteAccountError,
     response: deleteAccountResponse,
     LoadComponent: deleteAccountLoadingComponent
-  } = useSendToAPI('http://localhost:3000/api/delete/DiabetesManagement/delete/stjda-signup-forms', 'DELETE');
+  } = useSendToAPI(`${proxy_ip}/api/delete/DiabetesManagement/delete/stjda-signup-forms`, 'DELETE');
 
 
   const {
@@ -121,7 +124,7 @@ const [accountCreatedSucess, setAccountCreatedSucess] = useState({success: null,
     error: sendEmailToAccountError,
     response: accountResponse,
     LoadComponent: AccountLoadingComponent
-  } = useSendToAPI('http://localhost:3000/api/signup/send-email', 'POST');
+  } = useSendToAPI(`${proxy_ip}/api/signup/send-email`, 'POST');
   
 
   const [attributeMaps, setAttributeMaps] = useState({

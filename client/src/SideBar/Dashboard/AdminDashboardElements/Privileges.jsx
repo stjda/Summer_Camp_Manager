@@ -1,5 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, TextField, Button, Paper, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Snackbar, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { 
+    Box, 
+    Typography, 
+    TextField, 
+    Button, 
+    Paper, 
+    CircularProgress, 
+    Table, TableBody, 
+    TableCell, 
+    TableContainer, 
+    TableHead, 
+    TableRow, 
+    IconButton, 
+    Snackbar, 
+    Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Alert from '@mui/material/Alert';
 
@@ -11,6 +25,8 @@ export const AdminPrivileges = () => {
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
     const [confirmDialog, setConfirmDialog] = useState({ open: false, title: '', message: '', onConfirm: null });
 
+    const proxy_ip='https://www.whealthy.ai/server'
+
     useEffect(() => {
         fetchAdministrators();
     }, []);
@@ -18,7 +34,7 @@ export const AdminPrivileges = () => {
     const fetchAdministrators = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost:3000/api/admin');
+            const response = await fetch(`${proxy_ip}/api/admin`);
             if (!response.ok) {
                 throw new Error('Failed to fetch administrators');
             }
@@ -38,7 +54,7 @@ export const AdminPrivileges = () => {
             message: `Are you sure you want to add ${newAdmin.name} as an administrator?`,
             onConfirm: async () => {
                 try {
-                    const response = await fetch('http://localhost:3000/api/admin', {
+                    const response = await fetch(`${proxy_ip}/api/admin`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(newAdmin),
@@ -65,7 +81,7 @@ export const AdminPrivileges = () => {
             message: `Are you sure you want to remove ${name} as an administrator?`,
             onConfirm: async () => {
                 try {
-                    const response = await fetch(`http://localhost:3000/api/admin/${id}`, { method: 'DELETE' });
+                    const response = await fetch(`${proxy_ip}/api/admin/${id}`, { method: 'DELETE' });
                     if (!response.ok) {
                         const errorData = await response.json();
                         throw new Error(errorData.error || 'Failed to remove administrator');

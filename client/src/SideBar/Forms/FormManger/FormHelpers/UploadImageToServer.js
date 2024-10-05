@@ -19,13 +19,16 @@ import { useSendToAPI } from '../../../../util/ApiHooks/index';
  * @property {Function} uploadLoadingComponent - A React component to display during file upload.
  */
 export const UploadFileHelper = (fieldName, setLocalFormData, isMultiple = false) => {
+
+  const proxy_ip='https://www.whealthy.ai/server'
+
   const {
     sendRequest: sendUpload,
     loading: uploadLoading,
     error: uploadError,
     response: uploadResponse,
     LoadComponent: uploadLoadingComponent
-  } = useSendToAPI('http://localhost:3000/api/forms/DiabetesManagement/uploadDocument', 'POST');
+  } = useSendToAPI(`${proxy_ip}/api/forms/DiabetesManagement/uploadDocument`, 'POST');
 
   const MAX_WIDTH = 1700;
   const MAX_HEIGHT = 2200;

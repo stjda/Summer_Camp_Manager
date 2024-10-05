@@ -39,10 +39,7 @@ const updateSW = registerSW({
       updateSW();
     }
   },
-  onOfflineReady() {
-    // Show a message when the app is ready to work offline
-    console.log("The app is ready to work offline!");
-  },
+  onOfflineReady() {},
 });
 
 // Render the app with the theme

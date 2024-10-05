@@ -251,8 +251,11 @@ router.post('/create', async (req,res)=>{
     let medicalNotes;
     
     console.log("we made it!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: ", req.body)
-    res.status(200).json({ message: "request recieve.", success: true })
-    return
+    if(req.body.role === 'camper'){
+        res.status(200).json({ message: "request recieve.", success: true })
+        console.log('you are returning campers remove this line to allow through')
+        return
+    }
     // parse through the req.body
     if (!req.body) {
         return res.status(400).json({ message: "Bad request, no data provided" });

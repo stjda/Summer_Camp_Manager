@@ -39,6 +39,8 @@ export const ValidateToken = () => {
     const tokenFromUrl = location.search.substring(1);
     setToken(tokenFromUrl);
 
+    const proxy_ip='https://www.whealthy.ai/server'
+    
     /**
      * Validates the token by making an API call.
      * @async
@@ -46,7 +48,7 @@ export const ValidateToken = () => {
      */
     const validateToken = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/signup/validate/${tokenFromUrl}`);
+        const response = await axios.get(`${proxy_ip}/api/signup/validate/${tokenFromUrl}`);
         if (response.data.valid) {
           setIsValidated(true); // this changes to the login component
           setChecksum(response.data.key)

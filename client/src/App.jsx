@@ -7,17 +7,16 @@ import { SignInSection } from './Login';
 import { Error401, Error409 } from './ErrorPages';
 import { Route, createBrowserRouter, createRoutesFromElements, RouterProvider, Navigate  } from 'react-router-dom';
 
-// Set up an Apollo client to point towards graphql backend
+// Set up an Apollo client to point towards the GraphQL backend via the reverse proxy on the
 const httpLink = createHttpLink({
-  uri: 'http://localhost:4000/graphql', // GraphQL endpoint
+  uri: 'https://www.whealthy.ai/graphql', // reverse proxy's public URL
 });
-// // redis browser url: http://localhost:8001/redis-stack/browser
-// context for JWT
+
+// Context for JWT
 const authLink = setContext((_, { headers }) => {
   // Get token from local storage
   const token = localStorage.getItem('STJDA');
   // Return the headers to the context
-  
   return {
     headers: {
       ...headers,
@@ -26,8 +25,7 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-// httpLink defines where the GraphQL server is hosted. 
-// authLink used for setting any headers that need to be attached to your requests.
+// Configure the Apollo Client
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),

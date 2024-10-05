@@ -46,9 +46,11 @@ export const MedCheckInForm = ({ activeForm, handleSubmit: parentHandleSubmit })
   const [selectedResult, setSelectedResult] = useState(null);
   const [expandedPanel, setExpandedPanel] = useState(false);
 
+  const proxy_ip='https://www.whealthy.ai/server'
+
   const prefix = '';
   const bucket = 'stjda-signup-forms';
-  const endpoint = 'http://localhost:3000/api/forms/med-checkin-filtering';
+  const endpoint = `https://www.whealthy.ai/server/api/forms/med-checkin-filtering`;
   
    /**
    * Custom hook to fetch medical check-in data
@@ -64,7 +66,7 @@ export const MedCheckInForm = ({ activeForm, handleSubmit: parentHandleSubmit })
     error: sendFormError,
     response: formResponse,
     LoadComponent: sendFormLoadingComponent
-  } = useSendToAPI('http://localhost:3000/api/forms/MedicalCheckIn/submit', 'POST');
+  } = useSendToAPI(`${proxy_ip}/api/forms/MedicalCheckIn/submit`, 'POST');
 
   const {
     sendRequest: deleteForm,
@@ -72,7 +74,7 @@ export const MedCheckInForm = ({ activeForm, handleSubmit: parentHandleSubmit })
     error: deleteAccountError,
     response: deleteAccountResponse,
     LoadComponent: deleteAccountLoadingComponent
-  } = useSendToAPI('http://localhost:3000/api/delete/DiabetesManagement/delete/med-checkin-forms', 'DELETE');
+  } = useSendToAPI(`${proxy_ip}/api/delete/DiabetesManagement/delete/med-checkin-forms`, 'DELETE');
 
   const [filters, setFilters] = useState({
     firstName: '',

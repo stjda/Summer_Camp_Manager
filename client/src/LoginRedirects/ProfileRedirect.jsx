@@ -31,6 +31,9 @@ export const ProfileRedirect = () => {
     const [messageIndex, setMessageIndex] = useState(0);
     const [STJDA_No_User, setSTJDA_No_User] = useState(false);
     const { userProfileStore } = useStore();
+
+    const proxy_ip = 'https://www.whealthy.ai/server';
+
     // call to graphql for the camper data
     const [getCamperByEmail, { data, loading: queryLoading, error }] = useLazyQuery(GET_CAMPER_BY_EMAIL, {
       fetchPolicy: 'no-cache',
@@ -400,7 +403,7 @@ export const ProfileRedirect = () => {
 
     const fetchData = async () => {
         try {
-            const response = await fetch("http://localhost:3000/api/auth/credentials", {
+            const response = await fetch(`${proxy_ip}/api/auth/credentials`, {
                 method: "GET",
                 credentials: 'include',  // this is sending the cookies to the backend for authentication
                 headers: {
@@ -464,7 +467,7 @@ export const ProfileRedirect = () => {
         }
     
         // First, clear existing data (if any) by setting it to null
-        const clearResponse = await fetch(`http://localhost:3000/api/redis/cache/${key}`, {
+        const clearResponse = await fetch(`${proxy_ip}/api/redis/cache/${key}`, {
           method: "PUT",
           headers: {
             'Content-Type': 'application/json'
@@ -477,7 +480,7 @@ export const ProfileRedirect = () => {
         }
     
         // Now, set the new data
-        const setResponse = await fetch(`http://localhost:3000/api/redis/cache/${key}`, {
+        const setResponse = await fetch(`${proxy_ip}/api/redis/cache/${key}`, {
           method: "PUT",
           headers: {
             'Content-Type': 'application/json'

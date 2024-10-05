@@ -3,7 +3,7 @@ const router = express.Router();
 const { config } = require('dotenv');
 
 config({ path: './.env' });
-
+const baseUrl = 'https://www.whealthy.ai'
 // Middleware for initial data processing and storage
 // will create a new entry in a bucket and set a checksum as the key
 router.delete('/DiabetesManagement/delete/:bucket', async (req, res) => {
@@ -18,7 +18,7 @@ router.delete('/DiabetesManagement/delete/:bucket', async (req, res) => {
   
       // Store the results in the request object for use in the next middleware
     //   res.status(200).json(processedData)  api/minioG/delete/:bucket/:key
-    const result = await fetch(`http://34.135.9.49:3000/api/minioD/delete/${bucket}/${originalKeyKey}`, {
+    const result = await fetch(`${baseUrl}:3000/api/minioD/delete/${bucket}/${originalKeyKey}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

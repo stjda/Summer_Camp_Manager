@@ -19,14 +19,14 @@ export const useMedCheckInData = (endpoint, prefix = '', bucket = 'stjda-signup-
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const proxy_url = 'https://34.31.32.113/server'
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        
+        // https://34.31.32.113/server/
         // Fetch data from med-checkin-forms bucket
-        const responseFromMedCheckInFormsBucket = await axios.get(`http://localhost:3000/api/forms/med-checkin-filtering/${prefix}`, {
+        const responseFromMedCheckInFormsBucket = await axios.get(`${proxy_url}/api/forms/med-checkin-filtering/${prefix}`, {
           params: {
             bucket: 'med-checkin-forms',
             formCompletionStatus: isCompleted.toString(),
@@ -40,7 +40,7 @@ export const useMedCheckInData = (endpoint, prefix = '', bucket = 'stjda-signup-
         }
 
         // Fetch data from stjda-signup-forms bucket
-        const responseFromIntakeFormsBucket = await axios.get(`http://localhost:3000/api/forms/med-checkin-filter`, {
+        const responseFromIntakeFormsBucket = await axios.get(`${endpoint}/api/forms/med-checkin-filter`, {
           params: { 
             bucket: bucket, 
             objectsToFilterAginst: JSON.stringify(flatMedCheckIn)
